@@ -14,7 +14,7 @@ BEGIN
     WHERE member_id = _member_id;
 
     IF _type_id IS NULL THEN
-        RETURN 'Error: Member ID not found or has no Membership register.';
+        RETURN 'Error: Member ID ' || _member_id || ' not found.';
     END IF;
 
     SELECT duration_days INTO _duration
@@ -22,7 +22,7 @@ BEGIN
     WHERE type_id = _type_id;
 
     IF _duration IS NULL THEN
-        RETURN 'Error: Membership Type configuration missing.';
+        RETURN 'Error: Membership Type not configured properly.';
     END IF;
 
     IF _current_end IS NULL OR _current_end < CURRENT_DATE THEN
@@ -35,7 +35,7 @@ BEGIN
     SET membership_end_date = _new_end
     WHERE member_id = _member_id;
 
-    RETURN 'Success: Membership renewed until ' || _new_end;
+    RETURN 'Success: Membership renewed. New Expiry: ' || _new_end;
 END;
 $$;
 
