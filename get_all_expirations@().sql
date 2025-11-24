@@ -1,4 +1,4 @@
-create function get_all_expirations()
+create function get_all_expirations(_gym_id integer)
     returns TABLE(r_member_id integer, r_name character varying, r_expires date, r_status text)
     language plpgsql
 as
@@ -14,10 +14,11 @@ BEGIN
             ELSE 'ACTIVE'
         END::TEXT
     FROM members m
-    WHERE m.membership_end_date IS NOT NULL
+    WHERE m.gym_id = _gym_id
+      AND m.membership_end_date IS NOT NULL
     ORDER BY m.membership_end_date ASC;
 END;
 $$;
 
-alter function get_all_expirations() owner to root;
+alter function get_all_expirations(integer) owner to root;
 
