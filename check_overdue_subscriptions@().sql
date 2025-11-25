@@ -1,29 +1,18 @@
 create function check_overdue_subscriptions()
-    returns TABLE(owner_name character varying, gyms_suspended integer)
+    returns TABLE(gym_name character varying, expired_on date)
     language plpgsql
 as
 $$
-DECLARE
-    _owner RECORD;
 BEGIN
-    FOR _owner IN
-        SELECT DISTINCT owner_id
-        FROM system_payments
-        GROUP BY owner_id
-        HAVING MAX(period_end) < CURRENT_DATE
-    LOOP
-        UPDATE gyms
-        SET subscription_status = 'Suspended'
-        WHERE owner_id = _owner.owner_id
-          AND subscription_status = 'Active';
-    END LOOP;
+    UPDATE gyms
+    SET subscription_status = 'Suspended'
+    WHERE subscription_end_date < CURRENT_DATE
+      AND subscription_status = 'Active';
 
     RETURN QUERY
-    SELECT go.full_name, COUNT(g.gym_id)::INT
-    FROM gym_owners go
-    JOIN gyms g ON go.owner_id = g.owner_id
-    WHERE g.subscription_status = 'Suspended'
-    GROUP BY go.full_name;
+    SELECT name, subscription_end_date
+    FROM gyms
+    WHERE subscription_status = 'Suspended';
 END;
 $$;
 
