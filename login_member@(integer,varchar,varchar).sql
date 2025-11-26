@@ -9,6 +9,7 @@ BEGIN
         member_id,
         full_name,
         CASE
+            WHEN membership_end_date IS NULL THEN 'Pending'
             WHEN membership_end_date < CURRENT_DATE THEN 'Expired'
             ELSE 'Active'
         END::VARCHAR

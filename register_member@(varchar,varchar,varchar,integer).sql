@@ -2,24 +2,11 @@ create function register_member(_gym_id integer, _name character varying, _email
     language plpgsql
 as
 $$
-DECLARE
-    _duration INT;
-    _end_date DATE;
 BEGIN
-    SELECT duration_days INTO _duration
-    FROM membership_types
-    WHERE type_id = _type_id AND gym_id = _gym_id;
-
-    IF _duration IS NULL THEN
-        RAISE EXCEPTION 'Invalid Membership Type ID % for Gym ID %', _type_id, _gym_id;
-    END IF;
-
-    _end_date := CURRENT_DATE + _duration;
-
     INSERT INTO members (gym_id, full_name, email, password_hash, phone, type_id, membership_end_date)
-    VALUES (_gym_id, _name, _email, _password_hash, _phone, _type_id, _end_date);
+    VALUES (_gym_id, _name, _email, _password_hash, _phone, _type_id, NULL);
 
-    RETURN 'Member registered successfully. Expires on: ' || _end_date;
+    RETURN 'Success: Account created for ' || _name || '. Please make a payment to activate membership.';
 END;
 $$;
 
