@@ -10,7 +10,7 @@ BEGIN
         t.trainer_id,
         t.full_name,
         t.specialization,
-        CURRENT_TIMESTAMP
+        CURRENT_TIMESTAMP::TIMESTAMP
     FROM trainers t
     JOIN gyms g ON t.gym_id = g.gym_id
     WHERE g.owner_id = _owner_id
