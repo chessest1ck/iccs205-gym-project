@@ -3,8 +3,33 @@ create function register_member(_gym_id integer, _name character varying, _email
 as
 $$
 BEGIN
-    INSERT INTO members (gym_id, full_name, email, password_hash, phone, type_id, membership_end_date)
-    VALUES (_gym_id, _name, _email, _password_hash, _phone, _type_id, NULL);
+    IF EXISTS (
+        SELECT 1
+        FROM members 
+        WHERE gym_id = _gym_id
+          AND email = _email
+    ) THEN
+        RETURN 'Error: The email ' || _email || ' is already registered in this gym.';
+    END IF;
+
+    INSERT INTO members (
+        gym_id,
+        full_name,
+        email,
+        password_hash,
+        phone,
+        type_id,
+        membership_end_date
+    )
+    VALUES (
+        _gym_id,
+        _name,
+        _email,
+        _password_hash,
+        _phone,
+        _type_id,
+        NULL
+    );
 
     RETURN 'Success: Account created for ' || _name || '. Please make a payment to activate membership.';
 END;
